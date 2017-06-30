@@ -16,6 +16,10 @@ SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 
+# Declare an array to store the patient name and sample id
+declare -A samplePatient
+
+
 # Parse SampleSheet
 function parseSampleSheet {
 
@@ -90,13 +94,11 @@ function inList {
 	local f="$INPUTFOLDER"
 	shift
 	local lst=(${@})
-	#echo $f
-	#echo ${lst[@]}
 	for toskip in ${lst[*]}
 	do
 		if [[ "$toskip" == "$f" ]]	
 		then
-			#printf "Skip"
+			printf "Skip" # This line is needed currently to identify samples to skip
 			break
 		fi
 	done
