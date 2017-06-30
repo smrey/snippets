@@ -6,7 +6,7 @@
 #Status: DEVELOPMENT/TESTING
 Version=0.0
 
-# Requires bash v4 or above
+# Requires bash v4 or above- remove line
 
 # How to use
 # bash CRUK_draft.sh <path_to_sample_sheet> 
@@ -32,23 +32,24 @@ function parseSampleSheet {
 	
 	# Obtain project name from sample sheet
 	#projectName=$(grep "Experiment Name" "$1"SampleSheet.csv | cut -d, -f2 | tr -d " ")
-	
+	projectName="sr2" #temp var	
+
 	# Obtain list of samples from sample sheet
 	for line in $(sed "1,/Sample_ID/d" "$1"SampleSheet.csv | tr -d " ")
 	do 
-	 	samplename=$(printf $line | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
-	 	projectName="sr" #temp var
+	 	samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
+
 	 	# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
-	 	if [[ ${#samplename} = 0 ]] || [[ $samplename =~ [" "] ]]
+	 	if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
 		then
 			continue
 	 	fi
 
 	 	# Append information to text file
-	 	printf $samplename >> samples.txt
+	 	printf "$samplename" >> samples.txt
 	 	printf "%s\t" >> samples.txt
-	 	patientname=$(printf $line | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
-	 	printf $patientname >> samples.txt
+	 	patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
+	 	printf "$patientname" >> samples.txt
 	 	printf "%s\n" >> samples.txt
 	done
 
@@ -68,20 +69,20 @@ function pairSamples {
 
 		# Skip the NTC and Control samples
 		# Exclude Control and NTC as they aren't tumour-normal pairs
-	 	if [[ $sample == "Control" ]] || [[ $sample == "NTC" ]] || [[ $sample == "Normal" ]]
+	 	if [[ "$sample" == "Control" ]] || [[ "$sample" == "NTC" ]] || [[ "$sample" == "Normal" ]]
 	 		then
 	 	 		continue
 	 	fi
 
 		if (( $count % 2 == 0 ))
 	 	then
-	 	 	tumour=$sample
+	 	 	tumour="$sample"
 	 	else
-	 	 	normal=$sample
+	 	 	normal="$sample"
 	 	 	# Add paired samples to a file- tumour sample first, normal sample second
-	 	 	printf $tumour >> SamplePairs.txt
+	 	 	printf "$tumour" >> SamplePairs.txt
 	 	 	printf "%s\t" >> SamplePairs.txt
-	 	 	printf $normal >> SamplePairs.txt
+	 	 	printf "$normal" >> SamplePairs.txt
 	 	 	printf "%s\n" >> SamplePairs.txt
 		fi
 
@@ -99,9 +100,9 @@ function inList {
 	#echo ${lst[@]}
 	for toskip in ${lst[*]}
 	do
-		if [[ $toskip == $f ]]	
+		if [[ "$toskip" == "$f" ]]	
 		then
-			printf "Skip"
+			#printf "Skip"
 			break
 		fi
 	done
@@ -112,15 +113,10 @@ function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	# Create/clear file SampleIds.txt, which holds the sample name and the patient identifiers
-	#>SampleIds.txt
-
 	for fq in $(cat samples.txt | cut -f1)
 	do
-		fastq=$(inList $fq ${SKIPPED_SAMPLES[@]})
-		#echo $fq
-		#echo $fastq
-		if [[ $fastq == "Skip" ]]
+		fastq=$(inList "$fq" ${SKIPPED_SAMPLES[@]})
+		if [[ "$fastq" == "Skip" ]]
 		then
 			continue
 		else
@@ -131,19 +127,10 @@ function locateFastqs {
 
 			
 			# Obtain basespace identifier for each sample
-			baseSpaceId=$(bs -c $CONFIG upload sample -p $projectName -i "$fq" $f1 $f2 --terse)
+			baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fq" $f1 $f2 --terse)
 			# Store basespace ID in associative array with sample name
-			sampleids[$fq]=$baseSpaceId
+			#sampleids[$fq]=$baseSpaceId
 
-
-
-			#printf $fq >> SampleIds.txt
-	 	 	#printf "%s\t" >> SampleIds.txt
-			# Upload samples to project in basespace			
-			#bs -c $CONFIG upload sample -p $projectName -i "$fq" $f1 $f2 --terse >> SampleIds.txt
-	 	 	#printf "%s\n" >> SampleIds.txt
-
-	 	 	#sampleids[$fq] 
 		fi
 
 	done
@@ -174,7 +161,7 @@ pairSamples
 # Create project in basespace
 #for testing
 echo "Creating project"
-bs -c $CONFIG create project $projectName
+bs -c "$CONFIG" create project "$projectName"
 
 
 # Get fastqs and upload to basespace
@@ -182,8 +169,8 @@ locateFastqs $1
 
 
 #cat SamplePairs.txt
-echo ${sampleids[@]} # For troubleshooting
-echo ${!samplesids[@]}
+#echo ${sampleids[@]} # For troubleshooting
+#echo ${!samplesids[@]}
 
 
 # Obtain the project identifier
@@ -195,25 +182,25 @@ echo $projectId
 echo "Launching app"
 while read pair
 do
-	tum=$(echo $pair | cut -d" " -f1)
-	nor=$(echo $pair | cut -d" " -f2)
-	echo $tum # For troubleshooting
-	echo $nor # For troubleshooting
-	echo ${sampleids[$tum]}
-	echo ${sampleids[$nor]}
+	tum=$(echo "$pair" | cut -d" " -f1)
+	nor=$(echo "$pair" | cut -d" " -f2)
+
+	# Obtain sample ids from basespace
+	tumId=$(bs -c saraEUPriv list samples --project "$projectName" --sample "$tum" --terse)
+	norId=$(bs -c saraEUPriv list samples --project "$projectName" --sample "$nor" --terse)
+
 
 	# Launch app and store the appsession ID	
-	appSessionId=$(bs -c $CONFIG launch app -n "SMP2 v2" ${sampleids[$nor]} $projectName ${sampleids[$tum]} --terse)
+	appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$norId" "$projectName" "$tumId" --terse)
 	echo $appSessionId
 	
 	# Wait for the app to complete and store the appsession ID	
-	appRes=$(bs -c $CONFIG wait $appSessionId --terse)
+	appRes=$(bs -c "$CONFIG" wait "$appSessionId" --terse)
 
 	# Download required analysis results files
-	bs cp conf://$CONFIG/Projects/$ProjectId/appresults/$appRes/*.bam $RESULTSFOLDER
-	bs cp conf://$CONFIG/Projects/$ProjectId/appresults/$appRes/*.bai $RESULTSFOLDER
-	bs cp conf://$CONFIG/Projects/$ProjectId/appresults/$appRes/*.xls* $RESULTSFOLDER
-
+	bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bam "$RESULTSFOLDER"
+	bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bai "$RESULTSFOLDER"
+	bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.xls* "$RESULTSFOLDER"
 
 done <SamplePairs.txt
 
