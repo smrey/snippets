@@ -7,13 +7,14 @@
 Version=0.0
 
 # How to use
-# bash CRUK_draft.sh <path_to_sample_sheet> 
+# bash CRUK_draft.sh <path_to_sample_sheet> <path_to_results_location> <Sample Pairs text file>
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
 
 CONFIG="saraEUPriv"
 APPNAME="SMP2 v2"
 SKIPPED_SAMPLES=("Control" "NTC" "Normal")
-RESULTSFOLDER=.
+INPUTFOLDER="$1"
+RESULTSFOLDER="$2"
 
 # Parse SampleSheet
 function parseSampleSheet {
@@ -24,11 +25,11 @@ function parseSampleSheet {
 	>samples.txt
 	
 	# Obtain project name from sample sheet
-	#projectName=$(grep "Experiment Name" "$1"SampleSheet.csv | cut -d, -f2 | tr -d " ")
+	#projectName=$(grep "Experiment Name" "$INPUTFOLDER"SampleSheet.csv | cut -d, -f2 | tr -d " ")
 	projectName="sr2" #temp var	
 
 	# Obtain list of samples from sample sheet
-	for line in $(sed "1,/Sample_ID/d" "$1"SampleSheet.csv | tr -d " ")
+	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER"SampleSheet.csv | tr -d " ")
 	do 
 	 	samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
 
@@ -86,7 +87,7 @@ function pairSamples {
 }
 
 function inList {
-	local f=$1
+	local f="$INPUTFOLDER"
 	shift
 	local lst=(${@})
 	#echo $f
@@ -115,8 +116,8 @@ function locateFastqs {
 		else
 			# Pair samples
 			#echo $fq
-			f1=$1${fq}*_R1_*.fastq.gz
-			f2=$1${fq}*_R2_*.fastq.gz
+			f1=$INPUTFOLDER${fq}*_R1_*.fastq.gz
+			f2=$INPUTFOLDER${fq}*_R2_*.fastq.gz
 
 			
 			# Obtain basespace identifier for each sample
@@ -141,7 +142,7 @@ function locateFastqs {
 # Call the functions
 
 # Parse sample sheet to obtain required information
-parseSampleSheet $1
+parseSampleSheet $INPUTFOLDER
 
 
 # Pair samples according to order in sample sheet- make a command line argument optional to manually create
@@ -156,7 +157,7 @@ bs -c "$CONFIG" create project "$projectName"
 
 
 # Get fastqs and upload to basespace
-locateFastqs $1
+locateFastqs $INPUTFOLDER
 
 
 # Obtain the project identifier
