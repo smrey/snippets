@@ -6,8 +6,6 @@
 #Status: DEVELOPMENT/TESTING
 Version=0.0
 
-# Requires bash v4 or above- remove line
-
 # How to use
 # bash CRUK_draft.sh <path_to_sample_sheet> 
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
@@ -16,11 +14,6 @@ CONFIG="saraEUPriv"
 APPNAME="SMP2 v2"
 SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 RESULTSFOLDER=.
-
-
-# Declare an array for the sample names and ids
-declare -A sampleids
-
 
 # Parse SampleSheet
 function parseSampleSheet {
@@ -128,8 +121,6 @@ function locateFastqs {
 			
 			# Obtain basespace identifier for each sample
 			baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fq" $f1 $f2 --terse)
-			# Store basespace ID in associative array with sample name
-			#sampleids[$fq]=$baseSpaceId
 
 		fi
 
@@ -166,11 +157,6 @@ bs -c "$CONFIG" create project "$projectName"
 
 # Get fastqs and upload to basespace
 locateFastqs $1
-
-
-#cat SamplePairs.txt
-#echo ${sampleids[@]} # For troubleshooting
-#echo ${!samplesids[@]}
 
 
 # Obtain the project identifier
