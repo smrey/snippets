@@ -90,7 +90,7 @@ function pairSamples {
 }
 
 function inList {
-	local f="$INPUTFOLDER"
+	local f="$1"
 	shift
 	local lst=(${@})
 	for toskip in ${lst[*]}
