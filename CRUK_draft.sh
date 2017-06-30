@@ -170,7 +170,7 @@ echo $projectId
 echo "Launching app"
 while read pair
 do
-	tum=$(echo "$pair" | cut -d" " -f1)
+	tum=$(echo "$pair" | cut -d" " -f1) # FIX REQUIRED HERE- BOTH OF PAIR ARE COMING THROUGH
 	nor=$(echo "$pair" | cut -d" " -f2)
 
 	# Obtain sample ids from basespace
