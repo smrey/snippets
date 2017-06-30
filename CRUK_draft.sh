@@ -162,7 +162,7 @@ locateFastqs $INPUTFOLDER
 
 
 # Obtain the project identifier
-projectId=$(bs -c saraEUPriv list projects --project-name "$projectName" --terse)
+projectId=$(bs -c "$CONFIG" list projects --project-name "$projectName" --terse)
 echo $projectId
 
 
@@ -174,8 +174,8 @@ do
 	nor=$(echo "$pair" | cut -d" " -f2)
 
 	# Obtain sample ids from basespace
-	tumId=$(bs -c saraEUPriv list samples --project "$projectName" --sample "$tum" --terse)
-	norId=$(bs -c saraEUPriv list samples --project "$projectName" --sample "$nor" --terse)
+	tumId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$tum" --terse)
+	norId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
 
 
 	# Launch app and store the appsession ID	
