@@ -7,10 +7,10 @@
 Version=0.0
 
 # How to use
-# bash CRUK_draft.sh <path_to_sample_sheet> <path_to_results_location> <Sample Pairs text file>
+# bash CRUK_draft.sh <path_to_sample_sheet> <path_to_results_location> <config_file_name> <Sample Pairs text file>
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
 
-CONFIG="saraEUPriv"
+CONFIG="$3"
 APPNAME="SMP2 v2"
 SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 INPUTFOLDER="$1"
