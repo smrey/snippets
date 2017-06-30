@@ -6,15 +6,19 @@
 #Status: DEVELOPMENT/TESTING
 Version=0.0
 
+
 # How to use
 # bash CRUK_draft.sh <path_to_sample_sheet> <path_to_results_location> <config_file_name> <Sample Pairs text file>
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
+# Requires bash version 4 or above
+
 
 CONFIG="$3"
 APPNAME="SMP2 v2"
 SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
+
 
 # Declare an array to store the patient name and sample id
 declare -A samplePatient
@@ -24,9 +28,6 @@ declare -A samplePatient
 function parseSampleSheet {
 
 	echo "Parsing sample sheet"
-
-	# Create/clear file samples.txt, which holds the sample name and the patient identifiers
-	>samples.txt
 	
 	# Obtain project name from sample sheet
 	#projectName=$(grep "Experiment Name" "$INPUTFOLDER"SampleSheet.csv | cut -d, -f2 | tr -d " ")
@@ -35,20 +36,18 @@ function parseSampleSheet {
 	# Obtain list of samples from sample sheet
 	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER"SampleSheet.csv | tr -d " ")
 	do 
-	 	samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
-
 	 	# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
 	 	if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
 		then
 			continue
 	 	fi
 
-	 	# Append information to text file
-	 	printf "$samplename" >> samples.txt
-	 	printf "%s\t" >> samples.txt
-	 	patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
-	 	printf "$patientname" >> samples.txt
-	 	printf "%s\n" >> samples.txt
+		# Obtain sample name and patient name		
+		samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
+		patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
+
+	 	# Append information to array
+		samplePatient["$samplename"]="$patientname"
 	done
 
 }
