@@ -13,31 +13,23 @@ Version=0.0
 # Requires bash version 4 or above
 
 # Usage checking
-if [ $# -eq 0 ]
+if [ "$#" -lt 2 ]
 	then
-		echo "No commandline arguments supplied" 
+		echo "Commandline args incorrect. Usage: $0 <path_to_sample_sheet> <path_to_results_location>." 
 		exit 0
 fi
 
-echo $3
+if [ "$#" -lt 3 ]
+	then
+		SAMPLEPAIRS="SamplePairs.txt"
+	else
+		SAMPLEPAIRS="$3"
+fi
 
+# Variables
 APPNAME="SMP2 v2"
-SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
-
-#: ${0?"Usage: $0 <path_to_sample_sheet> <path_to_results_location> <Sample Pairs text file>"}
-
-
-
-
-
-#if [ ]|| [ -z "$3"]
-		#SAMPLEPAIRS=$3
-	#else
-		#SAMPLEPAIRS="SamplePairs.txt"
-		#echo "yea"
-#fi
 
 
 # Declare an array to store the patient name and sample id
@@ -77,35 +69,27 @@ function pairSamples {
 
 	echo "Pairing samples"
 
-	# Create/clear file SamplesPairs.txt, which holds the sample name and the patient identifiers
-	>SamplePairs.txt
+	# Create/clear file which holds the sample name and the patient identifiers
+	>"$SAMPLEPAIRS"
 
 	count=0
 
 	for sample in $(cat samples.txt | cut -f1)
 	do
 
-		# Skip the NTC and Control samples
-		# Exclude Control and NTC as they aren't tumour-normal pairs
-	 	if [[ "$sample" == "Control" ]] || [[ "$sample" == "NTC" ]] || [[ "$sample" == "Normal" ]]
-	 		then
-	 	 		continue
-	 	fi
-
-		if (( $count % 2 == 0 ))
-	 	then
-	 	 	tumour="$sample"
-	 	else
-	 	 	normal="$sample"
+		echo $sample		
+		#if (( $count % 2 == 0 ))
+	 	#then
+	 	 	#tumour="$sample"
+	 	#else
+	 	 	#normal="$sample"
 	 	 	# Add paired samples to a file- tumour sample first, normal sample second
-	 	 	printf "$tumour" >> SamplePairs.txt
-	 	 	printf "%s\t" >> SamplePairs.txt
-	 	 	printf "$normal" >> SamplePairs.txt
-	 	 	printf "%s\n" >> SamplePairs.txt
-		fi
-
-		((count++))
-
+	 	 	#printf "$tumour">>"$SAMPLEPAIRS"
+	 	 	#printf "%s\t">>"$SAMPLEPAIRS"
+	 	 	#printf "$normal">>"$SAMPLEPAIRS"
+	 	 	#printf "%s\n">>"$SAMPLEPAIRS"
+		#fi
+		#((count++))
 	done
 
 }
@@ -151,6 +135,6 @@ do
 	echo $tum
 	echo $nor
 
-done <SamplePairs.txt
+done <"$SAMPLEPAIRS"
 
 
