@@ -89,42 +89,18 @@ function pairSamples {
 
 }
 
-function inList {
-	local f="$1"
-	shift
-	local lst=(${@})
-	for toskip in ${lst[*]}
-	do
-		if [[ "$toskip" == "$f" ]]	
-		then
-			printf "Skip" # This line is needed currently to identify samples to skip
-			break
-		fi
-	done
-}
-
 
 function locateFastqs {
 
 	echo "Uploading fastqs"
-
-	for fq in $(cat samples.txt | cut -f1)
-	do
-		fastq=$(inList "$fq" ${SKIPPED_SAMPLES[@]})
-		if [[ "$fastq" == "Skip" ]]
-		then
-			continue
-		else
-			# Pair samples
-			#echo $fq
-			f1=$INPUTFOLDER${fq}*_R1_*.fastq.gz
-			f2=$INPUTFOLDER${fq}*_R2_*.fastq.gz
+		for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "not_bs_samples.txt" -v )
+		do
+			f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
+			f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
 
 			
 			# Obtain basespace identifier for each sample
-			baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fq" $f1 $f2 --terse)
-
-		fi
+			baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fastq" $f1 $f2 --terse)
 
 	done
 
