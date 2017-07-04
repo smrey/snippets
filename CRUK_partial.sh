@@ -74,7 +74,8 @@ function pairSamples {
 
 	count=0
 
-	awk -v var="${!samplePatient[*]}" 'NR % 2 {print var[1]}'	
+	#awk -v var="${!samplePatient[*]}" 'NR % 2 {print var}'	
+	awk 'NR % 2 {print;} !(NR % 2) {print ;}' samples.txt
 	
 	for sample in ${!samplePatient[@]}
 	do
