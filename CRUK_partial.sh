@@ -74,10 +74,12 @@ function pairSamples {
 
 	count=0
 
-	for sample in $(cat samples.txt | cut -f1)
+	awk -v var="${!samplePatient[*]}" 'NR % 2 {print var[1]}'	
+	
+	for sample in ${!samplePatient[@]}
 	do
 
-		echo $sample		
+		echo $sample	
 		#if (( $count % 2 == 0 ))
 	 	#then
 	 	 	#tumour="$sample"
