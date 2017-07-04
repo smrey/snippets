@@ -36,15 +36,16 @@ function parseSampleSheet {
 	# Obtain list of samples from sample sheet
 	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER"SampleSheet.csv | tr -d " ")
 	do 
+		
+		# Obtain sample name and patient name		
+		samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
+		patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
+
 	 	# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
 	 	if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
 		then
 			continue
 	 	fi
-
-		# Obtain sample name and patient name		
-		samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
-		patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
 
 	 	# Append information to array
 		samplePatient["$samplename"]="$patientname"
@@ -94,18 +95,11 @@ function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	#fastqs=$(cat samples.txt | cut -f1)
-	#awk '{print $1}' "samples.txt"
-	for fastq in $( grep -f "not_bs_samples.txt" -v "samples.txt" | cut -f1 )
+	for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "not_bs_samples.txt" -v )
 	do
-		echo $fastq
-	done
+		f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
+		f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
 
-
-
-	for i in $( grep -f "no_bs_samples.txt" -v samplePatient[*] )
-	do
-		echo $i
 	done
 }
 
