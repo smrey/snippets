@@ -89,43 +89,24 @@ function pairSamples {
 
 }
 
-function inList {
-	local f="$1"
-	shift
-	local lst=(${@})
-	for toskip in ${lst[*]}
-	do
-		if [[ "$toskip" == "$f" ]]	
-		then
-			printf "Skip" # This line is needed currently to identify samples to skip
-			break
-		fi
-	done
-}
-
 
 function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	for fq in $(cat samples.txt | cut -f1)
+	#fastqs=$(cat samples.txt | cut -f1)
+	#awk '{print $1}' "samples.txt"
+	for fastq in $( grep -f "not_bs_samples.txt" -v "samples.txt" | cut -f1 )
 	do
-		fastq=$(inList "$fq" ${SKIPPED_SAMPLES[@]})
-		if [[ "$fastq" == "Skip" ]]
-		then
-			continue
-		else
-			# Pair samples
-			#echo $fq
-			f1=$INPUTFOLDER${fq}*_R1_*.fastq.gz
-			f2=$INPUTFOLDER${fq}*_R2_*.fastq.gz
-
-			
-
-		fi
-
+		echo $fastq
 	done
 
+
+
+	for i in $( grep -f "no_bs_samples.txt" -v samplePatient[*] )
+	do
+		echo $i
+	done
 }
 
 
