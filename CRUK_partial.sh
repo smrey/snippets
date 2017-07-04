@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -euo pipefail
+set -euo pipefail
 
 #Description: CRUK Basespace app pipeline- draft version
 #Author: Sara Rey
@@ -12,12 +12,32 @@ Version=0.0
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
 # Requires bash version 4 or above
 
+# Usage checking
+if [ $# -eq 0 ]
+	then
+		echo "No commandline arguments supplied" 
+		exit 0
+fi
 
-CONFIG="$3"
+echo $3
+
 APPNAME="SMP2 v2"
 SKIPPED_SAMPLES=("Control" "NTC" "Normal")
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
+
+#: ${0?"Usage: $0 <path_to_sample_sheet> <path_to_results_location> <Sample Pairs text file>"}
+
+
+
+
+
+#if [ ]|| [ -z "$3"]
+		#SAMPLEPAIRS=$3
+	#else
+		#SAMPLEPAIRS="SamplePairs.txt"
+		#echo "yea"
+#fi
 
 
 # Declare an array to store the patient name and sample id
@@ -118,4 +138,19 @@ pairSamples
 
 # Get fastqs
 locateFastqs $INPUTFOLDER
+
+
+# Launch app for each pair of samples in turn as tumour normal pairs then download analysis files
+echo "Launching app"
+while read pair
+do
+	printf $pair	
+	tum=$(printf "$pair" | cut -d" " -f1)
+	nor=$(printf "$pair" | cut -d" " -f2)
+
+	echo $tum
+	echo $nor
+
+done <SamplePairs.txt
+
 
