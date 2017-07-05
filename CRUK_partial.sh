@@ -22,9 +22,11 @@ fi
 if [ "$#" -lt 4 ]
 	then
 		SAMPLEPAIRS="SamplePairs.txt"
+		makePairs=1
 	else
 		SAMPLEPAIRS="$4"
 		# Include code to skip generation of a SamplePairs.txt file
+		makePairs=-1
 fi
 
 
@@ -113,8 +115,10 @@ parseSampleSheet $INPUTFOLDER
 
 # Pair samples according to order in sample sheet- make a command line argument optional to manually create
 # for NEQAS samples etc.
-pairSamples
-
+if [[ "$makePairs" == 1 ]]
+then
+	pairSamples
+fi
 
 # Get fastqs
 locateFastqs $INPUTFOLDER
