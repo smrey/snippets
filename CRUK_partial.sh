@@ -31,6 +31,7 @@ fi
 # Variables
 APPNAME="SMP2 v2"
 NOTBASESPACE="not_bs_samples.txt"
+NOTPAIR="unpaired_samples.txt"
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 NEGATIVE="$3"
@@ -42,14 +43,14 @@ declare -A samplePatient
 
 # Declare an array to store the sample ids in order
 declare -a samplesArr
-samplesArr+=1 # Initial entry required to avoid downstream error
+# Initial entry created to avoid downstream error when appending to array
+samplesArr+=1 
 
 
 # Parse SampleSheet
 function parseSampleSheet {
 
 	echo "Parsing sample sheet"
-	#>samples.txt
 	
 	# Obtain project name from sample sheet
 	#projectName=$(grep "Experiment Name" "$INPUTFOLDER""SampleSheet.csv" | cut -d, -f2 | tr -d " ")
@@ -75,8 +76,6 @@ function parseSampleSheet {
 		# Append information to list array- to retain order for sample pairing
 		samplesArr=("${samplesArr[@]}" "$samplename")
 
-		# Append information to file- to retain order for sample pairing
-		#printf '%s\n' "$samplename">>samples.txt
 	done
 }
 
@@ -90,7 +89,7 @@ function pairSamples {
 	
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
-	printf -- '%s\n' ${samplesArr[@]:1} | grep -f "$NOTBASESPACE" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
+	printf -- '%s\n' ${samplesArr[@]:1} | grep -f "$NOTPAIR" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
 }
 
 
