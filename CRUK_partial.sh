@@ -87,6 +87,8 @@ function pairSamples {
 	# Create/clear file which holds the sample name and the patient identifiers
 	> "$SAMPLEPAIRS"
 	grep -f not_bs_samples.txt -v samples.txt | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
+
+	printf -- '%s\n' ${samplesArr[@]:1} | grep -f not_bs_samples.txt -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
 }
 
 
