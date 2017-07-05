@@ -30,6 +30,7 @@ fi
 
 # Variables
 APPNAME="SMP2 v2"
+NOTBASESPACE="not_bs_samples.txt"
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 NEGATIVE="$3"
@@ -41,21 +42,21 @@ declare -A samplePatient
 
 # Declare an array to store the sample ids in order
 declare -a samplesArr
-samplesArr+=1 # Hack around an issue- fix this later
+samplesArr+=1 # Initial entry required to avoid downstream error
 
 
 # Parse SampleSheet
 function parseSampleSheet {
 
 	echo "Parsing sample sheet"
-	>samples.txt
+	#>samples.txt
 	
 	# Obtain project name from sample sheet
-	#projectName=$(grep "Experiment Name" "$INPUTFOLDER"SampleSheet.csv | cut -d, -f2 | tr -d " ")
+	#projectName=$(grep "Experiment Name" "$INPUTFOLDER""SampleSheet.csv" | cut -d, -f2 | tr -d " ")
 	projectName="sr2" #temp var	
 
 	# Obtain list of samples from sample sheet
-	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER"SampleSheet.csv | tr -d " ")
+	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER""SampleSheet.csv" | tr -d " ")
 	do 
 		
 		# Obtain sample name and patient name		
@@ -75,7 +76,7 @@ function parseSampleSheet {
 		samplesArr=("${samplesArr[@]}" "$samplename")
 
 		# Append information to file- to retain order for sample pairing
-		printf '%s\n' "$samplename">>samples.txt
+		#printf '%s\n' "$samplename">>samples.txt
 	done
 }
 
@@ -86,9 +87,10 @@ function pairSamples {
 
 	# Create/clear file which holds the sample name and the patient identifiers
 	> "$SAMPLEPAIRS"
-	grep -f not_bs_samples.txt -v samples.txt | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
-
-	printf -- '%s\n' ${samplesArr[@]:1} | grep -f not_bs_samples.txt -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
+	
+	# Iterate through the samples and exclude any samples that are not for basespace
+	# Pair the samples assuming the order tumour then normal and create a file of these pairs
+	printf -- '%s\n' ${samplesArr[@]:1} | grep -f "$NOTBASESPACE" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
 }
 
 
@@ -96,7 +98,7 @@ function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "not_bs_samples.txt" -v )
+	for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
 	do
 		f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
 		f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
@@ -118,7 +120,6 @@ pairSamples
 # Get fastqs
 locateFastqs $INPUTFOLDER
 
-echo ${samplesArr[@]:1}
 
 # Launch app for each pair of samples in turn as tumour normal pairs then download analysis files
 echo "Launching app"
