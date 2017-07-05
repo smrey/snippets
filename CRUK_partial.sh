@@ -32,8 +32,13 @@ INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 
 
-# Declare an array to store the patient name and sample id
+# Declare an associative array to store the patient name and sample id
 declare -A samplePatient
+
+
+# Declare an array to store the sample ids in order
+declare -a samplesArr
+samplesArr+=1 # Hack around an issue- fix this later
 
 
 # Parse SampleSheet
@@ -59,8 +64,11 @@ function parseSampleSheet {
 			continue
 	 	fi
 
-	 	# Append information to array
+	 	# Append information to associative array
 		samplePatient["$samplename"]="$patientname"
+
+		# Append information to list array- to retain order for sample pairing
+		samplesArr=("${samplesArr[@]}" "$samplename")
 	done
 
 }
@@ -72,15 +80,19 @@ function pairSamples {
 	# Create/clear file which holds the sample name and the patient identifiers
 	>"$SAMPLEPAIRS"
 
-	count=0
+	#count=0
+	
+	#echo "${samplesArr[@]}"
 
 	#awk -v var="${!samplePatient[*]}" 'NR % 2 {print var}'	
-	awk 'NR % 2 {print;} !(NR % 2) {print ;}' samples.txt
+	awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' samples.txt
 	
-	for sample in ${!samplePatient[@]}
-	do
+	awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' samples.txt >$SAMPLEPAIRS
+	
+	#for sample in ${!samplePatient[@]}
+	#do
 
-		echo $sample	
+		#echo $sample	
 		#if (( $count % 2 == 0 ))
 	 	#then
 	 	 	#tumour="$sample"
@@ -93,7 +105,7 @@ function pairSamples {
 	 	 	#printf "%s\n">>"$SAMPLEPAIRS"
 		#fi
 		#((count++))
-	done
+	#done
 
 }
 
