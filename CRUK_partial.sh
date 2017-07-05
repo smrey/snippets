@@ -113,8 +113,7 @@ function locateFastqs {
 parseSampleSheet $INPUTFOLDER
 
 
-# Pair samples according to order in sample sheet- make a command line argument optional to manually create
-# for NEQAS samples etc.
+# Pair samples according to order in sample sheet if manually created pairs file has not been supplied
 if [[ "$makePairs" == 1 ]]
 then
 	pairSamples
