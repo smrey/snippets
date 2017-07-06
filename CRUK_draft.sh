@@ -66,8 +66,7 @@ function parseSampleSheet {
 	echo "Parsing sample sheet"
 	
 	# Obtain project name from sample sheet
-	#projectName=$(grep "Experiment Name" "$INPUTFOLDER""SampleSheet.csv" | cut -d, -f2 | tr -d " ")
-	projectName="sr2" #temp var	
+	projectName=$(grep "Experiment Name" "$INPUTFOLDER""SampleSheet.csv" | cut -d, -f2 | tr -d " ")
 
 	# Obtain list of samples from sample sheet
 	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER""SampleSheet.csv" | tr -d " ")
