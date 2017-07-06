@@ -113,6 +113,8 @@ function pairSamples {
 	# Exclude non tumour-normal pairs from pair file creation		
 	grep -f <(printf -- '%s\n' "${notPairs[@]}") -v <(printf '%s\n' "${samplesArr[@]:1}") | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' >"$SAMPLEPAIRS"
 
+}
+
 
 function locateFastqs {
 
