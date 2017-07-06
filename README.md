@@ -16,13 +16,13 @@ A text file containing the names of samples
 A text file called "not_bs_samples.txt" containing the names of any samples on the Illumina SampleSheet.csv for which
 analysis in BaseSpace with the SMP2 app is not required. This should be placed in the same location as the script is run
 as the script.
-A text file called "unpaired_samples.txt" containing the names of any samples on the Illumina SampleSheet.csv which are
-not tumour normal pairs but are still required to be uploaded to basespace. An example of such a sample is the negative control. 
 This should be placed in the same location as the script is run
 as the script.
 
 An optional text file containing tumour normal pairs in the format <tumour_sample_id> <tab> <blood_sample_id> with each 
-pair on a new line.
+pair on a new line. This is required if the arrangement of samples in the Illumina SampleSheet.csv does not match the expected
+order, which is tumour sample then normal sample for each patient in order. Example S1 tumour sample for person 1, S2 blood sample
+for person 1, S3 tumour sample for person 2, S4 blood sample for person 2, etc.
 
 ## Files which will be downloaded
 
@@ -36,4 +36,3 @@ pair on a new line.
 
 
 
-## Troubleshooting
