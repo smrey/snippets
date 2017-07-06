@@ -4,7 +4,7 @@ set -euo pipefail
 #Description: CRUK Basespace app pipeline- draft version
 #Author: Sara Rey
 #Status: DEVELOPMENT/TESTING
-Version=0.0
+Version=0.2
 
 
 # How to use
@@ -38,6 +38,14 @@ INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 NEGATIVE="$3"
 
+
+# Check for the presence of the required files in the same directory as the script
+if ! [[ -e $NOTBASESPACE && -e $NOTPAIR ]]
+then
+			echo "Required files missing. Files "not_bs_samples.txt" and "unpaired_samples.txt" must be in the same location as the script. For instructions on creation of these files, see the ReadMe file."
+		exit 0
+fi
+ 
 
 # Declare an associative array to store the patient name and sample id
 declare -A samplePatient
