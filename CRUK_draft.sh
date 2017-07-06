@@ -36,7 +36,6 @@ fi
 CONFIG="saraEUPriv"
 APPNAME="SMP2 v2"
 NOTBASESPACE="not_bs_samples.txt"
-NOTPAIR="unpaired_samples.txt"
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 NEGATIVE="$3"
