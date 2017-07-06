@@ -13,15 +13,15 @@ https://help.basespace.illumina.com/articles/descriptive/basespace-cli/.
 The Illumina SampleSheet.csv with the desired project identifier for BaseSpace in the Experiment Name field.
 
 
-..* Fastq pairs (read 1 and read 2) for each the samples.
+  * Fastq pairs (read 1 and read 2) for each the samples.
 
 
-..* A text file called "not_bs_samples.txt" containing the names of any samples on the Illumina SampleSheet.csv for which
+  * A text file called "not_bs_samples.txt" containing the names of any samples on the Illumina SampleSheet.csv for which
 analysis in BaseSpace with the SMP2 app is not required. This should be placed in the same location as the script is run
 as the script.
 
 
-..* An optional text file containing tumour normal pairs in the format <tumour_sample_id> <tab> <blood_sample_id> with each 
+  * An optional text file containing tumour normal pairs in the format <tumour_sample_id> <tab> <blood_sample_id> with each 
 pair on a new line. This is required if the arrangement of samples in the Illumina SampleSheet.csv does not match the expected
 order, which is tumour sample then normal sample for each patient in order. An example of this order is: S1 tumour sample for person 
 1, S2 blood sample for person 1, S3 tumour sample for person 2, S4 blood sample for person 2, etc.
