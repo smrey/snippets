@@ -11,6 +11,8 @@ https://help.basespace.illumina.com/articles/descriptive/basespace-cli/.
 
 ### Required input files
 The Illumina SampleSheet.csv with the desired project identifier for BaseSpace in the Experiment Name field.
+
+
 Fastq pairs (read 1 and read 2) for each the samples.
 
 
