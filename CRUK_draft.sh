@@ -42,9 +42,9 @@ NEGATIVE="$3"
 
 
 # Check for the presence of the required files in the same directory as the script
-if ! [[ -e $NOTBASESPACE && -e $NOTPAIR ]]
+if ! [[ -e $NOTBASESPACE ]]
 then
-			echo "Required files missing. Files "not_bs_samples.txt" and "unpaired_samples.txt" must be in the same location as the script. For instructions on creation of these files, see the ReadMe file."
+			echo "Required file missing. File "not_bs_samples.txt" must be in the same location as the script. For instructions on creation of this file, see the README.MD file."
 		exit 0
 fi
  
