@@ -35,16 +35,15 @@ fi
 # Variables
 APPNAME="SMP2 v2"
 NOTBASESPACE="not_bs_samples.txt"
-NOTPAIR="unpaired_samples.txt"
 INPUTFOLDER="$1"
 RESULTSFOLDER="$2"
 NEGATIVE="$3"
 
 
 # Check for the presence of the required files in the same directory as the script
-if ! [[ -e $NOTBASESPACE && -e $NOTPAIR ]]
+if ! [[ -e $NOTBASESPACE ]]
 then
-		echo "Required files missing. Files "not_bs_samples.txt" and "unpaired_samples.txt" must be in the same location as the script. For instructions on creation of these files, see the ReadMe file."
+		echo "Required file missing. File "not_bs_samples.txt" must be in the same location as the script. For instructions on creation of this file, see the ReadMe file."
 		exit 0
 fi
  
@@ -101,10 +100,12 @@ function pairSamples {
 	
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
+	# Create array containing the samples that are not tumour-normal pairs	
 	mapfile -t notPairs < $NOTBASESPACE
-	notPairs=("${notPairs[@]}" "$NEGATIVE") 	
-	printf -- '%s\n' ${samplesArr[@]:1} | grep -iw "${notPairs[@]}" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}'	
-	printf -- '%s\n' ${samplesArr[@]:1} | grep -fiw "$NOTPAIR" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
+	notPairs=("${notPairs[@]}" "$NEGATIVE") 
+	# Exclude non tumour-normal pairs from pair file creation		
+	grep -f <(printf -- '%s\n' "${notPairs[@]}") -v <(printf '%s\n' "${samplesArr[@]:1}") | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"	
+
 }
 
 
