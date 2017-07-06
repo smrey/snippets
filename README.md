@@ -9,7 +9,7 @@ configured to access the correct BaseSpace location and username. For further in
 https://help.basespace.illumina.com/articles/descriptive/basespace-cli/.
 
 
-###Required input files
+### Required input files
 The Illumina SampleSheet.csv with the desired project identifier for BaseSpace in the Experiment Name field.
 Fastq pairs (read 1 and read 2) for each the samples.
 A text file containing the names of samples 
@@ -24,7 +24,7 @@ as the script.
 An optional text file containing tumour normal pairs in the format <tumour_sample_id> <tab> <blood_sample_id> with each 
 pair on a new line.
 
-##Files which will be downloaded
+## Files which will be downloaded
 
 
 
@@ -36,4 +36,4 @@ pair on a new line.
 
 
 
-##Troubleshooting
+## Troubleshooting
