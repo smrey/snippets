@@ -44,7 +44,7 @@ NEGATIVE="$3"
 # Check for the presence of the required files in the same directory as the script
 if ! [[ -e $NOTBASESPACE && -e $NOTPAIR ]]
 then
-			echo "Required files missing. Files "not_bs_samples.txt" and "unpaired_samples.txt" must be in the same location as the script. For instructions on creation of these files, see the ReadMe file."
+		echo "Required files missing. Files "not_bs_samples.txt" and "unpaired_samples.txt" must be in the same location as the script. For instructions on creation of these files, see the ReadMe file."
 		exit 0
 fi
  
@@ -101,7 +101,10 @@ function pairSamples {
 	
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
-	printf -- '%s\n' ${samplesArr[@]:1} | grep -f "$NOTPAIR" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
+	mapfile -t notPairs < $NOTBASESPACE
+	notPairs=("${notPairs[@]}" "$NEGATIVE") 	
+	printf -- '%s\n' ${samplesArr[@]:1} | grep -iw "${notPairs[@]}" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}'	
+	printf -- '%s\n' ${samplesArr[@]:1} | grep -fiw "$NOTPAIR" -v | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"
 }
 
 
