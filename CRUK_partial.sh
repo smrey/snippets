@@ -100,9 +100,16 @@ function pairSamples {
 	
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
-	# Create array containing the samples that are not tumour-normal pairs	
-	mapfile -t notPairs < $NOTBASESPACE
-	notPairs=("${notPairs[@]}" "$NEGATIVE") 
+	# Create array containing the samples that are not tumour-normal pairs
+	# Check if there are any samples on the run that are not for basespace
+	if [[ -s $NOTBASESPACE ]]
+	then
+		mapfile -t notPairs < $NOTBASESPACE
+		notPairs=("${notPairs[@]}" "$NEGATIVE") 
+	else
+		notPairs+=("$NEGATIVE")
+	fi	
+	
 	# Exclude non tumour-normal pairs from pair file creation		
 	grep -f <(printf -- '%s\n' "${notPairs[@]}") -v <(printf '%s\n' "${samplesArr[@]:1}") | awk -F '\t' 'NR % 2 {printf "%s\t", $1;} !(NR % 2) {printf "%s\n", $1;}' > "$SAMPLEPAIRS"	
 
