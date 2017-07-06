@@ -20,12 +20,15 @@ if [ "$#" -lt 3 ]
 		exit 0
 fi
 
+
 if [ "$#" -lt 4 ]
 	then
 		SAMPLEPAIRS="SamplePairs.txt"
+		makePairs=1
 	else
 		SAMPLEPAIRS="$4"
-		# Include code to skip generation of a SamplePairs.txt file
+		# Skip generation of a SamplePairs.txt file
+		makePairs=-1
 fi
 
 
@@ -176,7 +179,6 @@ fi
 
 
 # Create project in basespace
-#for testing
 echo "Creating project"
 bs -c "$CONFIG" create project "$projectName"
 
@@ -185,7 +187,7 @@ bs -c "$CONFIG" create project "$projectName"
 locateFastqs $INPUTFOLDER
 
 
-# Kick off the app for each pair in turn
+# Kick off the app for each pair in turn and donwload files
 launchApp
 
 

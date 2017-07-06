@@ -12,6 +12,7 @@ Version=0.2
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
 # Requires bash version 4 or above
 
+
 # Usage checking
 if [ "$#" -lt 3 ]
 	then
@@ -19,13 +20,14 @@ if [ "$#" -lt 3 ]
 		exit 0
 fi
 
+
 if [ "$#" -lt 4 ]
 	then
 		SAMPLEPAIRS="SamplePairs.txt"
 		makePairs=1
 	else
 		SAMPLEPAIRS="$4"
-		# Include code to skip generation of a SamplePairs.txt file
+		# Skip generation of a SamplePairs.txt file
 		makePairs=-1
 fi
 
@@ -127,6 +129,7 @@ then
 	pairSamples
 fi
 
+
 # Get fastqs
 locateFastqs $INPUTFOLDER
 
@@ -138,10 +141,9 @@ do
 	tum=$(printf "$pair" | cut -d$'\t' -f1)
 	nor=$(printf "$pair" | cut -d$'\t' -f2)
 
-	echo "negative " $NEGATIVE  	
+	echo "negative "$NEGATIVE  	
 	echo "tumour "$tum
 	echo "normal "$nor
-
 done <"$SAMPLEPAIRS"
 
 
