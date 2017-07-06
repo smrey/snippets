@@ -118,6 +118,13 @@ function launchApp {
 
 	# Launch app for each pair of samples in turn as tumour normal pairs then download analysis files
 	echo "Launching app"
+	
+	# Obtain basespace ID of negative control- this is not an optional input through the commandline app launch
+	negId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
+
+	# Obtain the project identifier
+	projectId=$(bs -c "$CONFIG" list projects --project-name "$projectName" --terse)
+
 	while read pair
 	do
 		tum=$(printf "$pair" | cut -d$'\t' -f1)
@@ -127,9 +134,8 @@ function launchApp {
 		tumId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$tum" --terse)
 		norId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
 
-
 		# Launch app and store the appsession ID	
-		appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$norId" "$projectName" "$tumId" --terse)
+		appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$negId" "$norId" "$projectName" "$tumId" --terse)
 		echo $appSessionId
 	
 		# Wait for the app to complete and store the appsession ID	
@@ -169,10 +175,6 @@ bs -c "$CONFIG" create project "$projectName"
 
 # Get fastqs and upload to basespace
 locateFastqs $INPUTFOLDER
-
-
-# Obtain the project identifier
-projectId=$(bs -c "$CONFIG" list projects --project-name "$projectName" --terse)
 
 
 # Kick off the app for each pair in turn
