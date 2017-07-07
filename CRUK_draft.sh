@@ -150,16 +150,13 @@ function launchApp {
 		tum=$(printf "$pair" | cut -d$'\t' -f1)
 		nor=$(printf "$pair" | cut -d$'\t' -f2)
 
-		echo $tum
-		echo $normal
-
 		# Obtain sample ids from basespace
 		tumId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$tum" --terse)
 		norId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
 
 		# Launch app and store the appsession ID	
 		appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$negId" "$norId" "$projectName" "$tumId" --terse)
-		echo $appSessionId
+		#echo $appSessionId
 	
 		# Wait for the app to complete and store the appsession ID	
 		appRes=$(bs -c "$CONFIG" wait "$appSessionId" --terse)
