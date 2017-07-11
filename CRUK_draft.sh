@@ -41,14 +41,22 @@ RESULTSFOLDER="$2"
 NEGATIVE="$3"
 
 
-# Check for the presence of the required files in the same directory as the script
-if ! [[ -e $NOTBASESPACE ]]
+# Check for the presence of the file with samples not to upload to BaseSpace in the same directory as the script
+if [[ -e $NOTBASESPACE ]]
 then
-			echo "Required file missing. File "not_bs_samples.txt" must be in the same location as the script. For instructions on creation of this file, see the README.MD file."
+	samples_to_skip=1
+	# Check that the provided file is not empty
+	if ! [[ -s $NOTBASESPACE ]]
+	then
+		echo "The file "not_bs_samples.txt" is empty. When this file exists, it must contain the names of samples that are in the SampleSheet.csv, but should not be uploaded to BaseSpace."
 		exit 0
+	fi
+else
+	samples_to_skip=-1
+	echo "No "not_bs_samples.txt" file found in the same directory as the script. All samples on the SampleSheet.csv will be uploaded to BaseSpace."
 fi
- 
 
+ 
 # Declare an associative array to store the patient name and sample id
 declare -A samplePatient
 
@@ -101,8 +109,8 @@ function pairSamples {
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
 	# Create array containing the samples that are not tumour-normal pairs
-	# Check if there are any samples on the run that are not for basespace
-	if [[ -s $NOTBASESPACE ]]
+# Check if there are any samples on the run that are not for BaseSpace and so should not be paired
+	if [[ -e $NOTBASESPACE ]]
 	then
 		mapfile -t notPairs < $NOTBASESPACE
 		notPairs=("${notPairs[@]}" "$NEGATIVE") 
