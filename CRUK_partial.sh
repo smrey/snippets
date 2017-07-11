@@ -52,12 +52,9 @@ then
 	fi
 else
 	samples_to_skip=-1
+	# Notify the user that all samples in the sample sheet will be uploaded
 	echo "No "not_bs_samples.txt" file found in the same directory as the script. All samples on the SampleSheet.csv will be uploaded to BaseSpace."
 fi
-
-
-# Declare an associative array to store the patient name and sample id
-declare -A samplePatient
 
 
 # Declare an array to store the sample ids in order
@@ -81,16 +78,12 @@ function parseSampleSheet {
 		
 		# Obtain sample name and patient name		
 		samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
-		patientname=$(printf "$line" | cut -d, -f2 | sed 's/[^a-zA-Z0-9]+/-/g')
 
 	 	# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
 	 	if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
 		then
 			continue
 	 	fi
-
-	 	# Append information to associative array
-		samplePatient["$samplename"]="$patientname"
 
 		# Append information to list array- to retain order for sample pairing
 		samplesArr=("${samplesArr[@]}" "$samplename")
@@ -130,9 +123,9 @@ function locateFastqs {
 
 	if [[ "$samples_to_skip" == 1 ]]
 	then
-		fastqlist=$( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
+		fastqlist=$( printf -- '%s\n' "${samplesArr[@]:1}" | grep -f "$NOTBASESPACE" -v )
 	else
-		fastqlist=$(printf -- '%s\n' "${samplePatient[@]}")
+		fastqlist=$(printf -- '%s\n' "${samplesArr[@]:1}")
 	fi
 	
 	for fastq in $(printf -- '%s\n' "$fastqlist")
