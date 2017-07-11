@@ -138,7 +138,7 @@ function locateFastqs {
 # Call the functions
 
 # Parse sample sheet to obtain required information
-parseSampleSheet $INPUTFOLDER
+parseSampleSheet
 
 
 # Pair samples according to order in sample sheet if manually created pairs file has not been supplied
@@ -148,8 +148,15 @@ then
 fi
 
 
+# Read out the sample pairs in the order tumour blood with each pair on a new line 
+echo "Displaying sample pairs:" 
+cat "$SAMPLEPAIRS"
+printf $'\n'
+echo "Abort the script if the samples are paired incorrectly and create a file of the pairs (see README.MD for further instructions)" 
+
+
 # Get fastqs
-locateFastqs $INPUTFOLDER
+locateFastqs
 
 
 # Launch app for each pair of samples in turn as tumour normal pairs then download analysis files

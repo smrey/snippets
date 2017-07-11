@@ -183,7 +183,7 @@ function launchApp {
 # Call the functions
 
 # Parse sample sheet to obtain required information
-parseSampleSheet $INPUTFOLDER
+parseSampleSheet
 
 
 # Pair samples according to order in sample sheet if manually created pairs file has not been supplied
@@ -193,13 +193,20 @@ then
 fi
 
 
+# Read out the sample pairs in the order tumour blood with each pair on a new line 
+echo "Displaying sample pairs:" 
+cat "$SAMPLEPAIRS"
+printf $'\n'
+echo "Abort the script if the samples are paired incorrectly and create a file of the pairs (see README.MD for further instructions)" 
+
+
 # Create project in basespace
 echo "Creating project"
 bs -c "$CONFIG" create project "$projectName"
 
 
 # Get fastqs and upload to basespace
-locateFastqs $INPUTFOLDER
+locateFastqs
 
 
 # Kick off the app for each pair in turn and donwload files
