@@ -19,7 +19,15 @@ if [ "$#" -lt 3 ]
 		exit 0
 fi
 
+# Check output directory exists
+if ! [[ -d $2 ]]
+	then 
+		echo "Output directory for results does not exist."
+		exit 0
+fi
 
+
+# Check if file containing sample pairs has been supplied or if one should be automatically generated
 if [ "$#" -lt 4 ]
 	then
 		SAMPLEPAIRS="SamplePairs.txt"
@@ -42,18 +50,18 @@ NEGATIVE="$3"
 
 # Check for the presence of the file with samples not to upload to BaseSpace in the same directory as the script
 if [[ -e $NOTBASESPACE ]]
-then
-	samples_to_skip=1
-	# Check that the provided file is not empty
-	if ! [[ -s $NOTBASESPACE ]]
 	then
-		echo "The file "not_bs_samples.txt" is empty. When this file exists, it must contain the names of samples that are in the SampleSheet.csv, but should not be uploaded to BaseSpace."
-		exit 0
-	fi
-else
-	samples_to_skip=-1
-	# Notify the user that all samples in the sample sheet will be uploaded
-	echo "No "not_bs_samples.txt" file found in the same directory as the script. All samples on the SampleSheet.csv will be uploaded to BaseSpace."
+		samples_to_skip=1
+		# Check that the provided file is not empty
+		if ! [[ -s $NOTBASESPACE ]]
+			then
+				echo "The file "not_bs_samples.txt" is empty. When this file exists, it must contain the names of samples that are in the SampleSheet.csv, but should not be uploaded to BaseSpace."
+				exit 0
+		fi
+	else
+		samples_to_skip=-1
+		# Notify the user that all samples in the sample sheet will be uploaded
+		echo "No "not_bs_samples.txt" file found in the same directory as the script. All samples on the SampleSheet.csv will be uploaded to BaseSpace."
 fi
 
 
@@ -73,19 +81,19 @@ function parseSampleSheet {
 
 	# Obtain list of samples from sample sheet
 	for line in $(sed "1,/Sample_ID/d" "$INPUTFOLDER""SampleSheet.csv" | tr -d " ")
-	do 
+		do 
 		
-		# Obtain sample name and patient name		
-		samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
+			# Obtain sample name and patient name		
+			samplename=$(printf "$line" | cut -d, -f1 | sed 's/[^a-zA-Z0-9]+/-/g')
 
-	 	# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
-	 	if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
-		then
-			continue
-	 	fi
+	 		# Skip any empty sample ids- both empty and whitespace characters (but not tabs at present)
+	 		if [[ "${#samplename}" = 0 ]] || [[ "$samplename" =~ [" "] ]]
+				then
+					continue
+	 		fi
 
-		# Append information to list array- to retain order for sample pairing
-		samplesArr=("${samplesArr[@]}" "$samplename")
+			# Append information to list array- to retain order for sample pairing
+			samplesArr=("${samplesArr[@]}" "$samplename")
 
 	done
 }
@@ -101,13 +109,13 @@ function pairSamples {
 	# Iterate through the samples and exclude any samples that are not for basespace
 	# Pair the samples assuming the order tumour then normal and create a file of these pairs
 	# Create array containing the samples that are not tumour-normal pairs
-# Check if there are any samples on the run that are not for BaseSpace and so should not be paired
+	# Check if there are any samples on the run that are not for BaseSpace and so should not be paired
 	if [[ -e $NOTBASESPACE ]]
-	then
-		mapfile -t notPairs < $NOTBASESPACE
-		notPairs=("${notPairs[@]}" "$NEGATIVE") 
-	else
-		notPairs+=("$NEGATIVE")
+		then
+			mapfile -t notPairs < $NOTBASESPACE
+			notPairs=("${notPairs[@]}" "$NEGATIVE") 
+		else
+			notPairs+=("$NEGATIVE")
 	fi	
 	
 	# Exclude non tumour-normal pairs from pair file creation		
@@ -121,19 +129,19 @@ function locateFastqs {
 	echo "Uploading fastqs"
 
 	if [[ "$samples_to_skip" == 1 ]]
-	then
-		fastqlist=$( printf -- '%s\n' "${samplesArr[@]:1}" | grep -f "$NOTBASESPACE" -v )
-	else
-		fastqlist=$(printf -- '%s\n' "${samplesArr[@]:1}")
+		then
+			fastqlist=$( printf -- '%s\n' "${samplesArr[@]:1}" | grep -f "$NOTBASESPACE" -v )
+		else
+			fastqlist=$(printf -- '%s\n' "${samplesArr[@]:1}")
 	fi
 	
 	for fastq in $(printf -- '%s\n' "$fastqlist")
-	do
-		f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
-		f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
+		do
+			f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
+			f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
 		
-		# Obtain basespace identifier for each sample
-		baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fastq" $f1 $f2 --terse)
+			# Obtain basespace identifier for each sample
+			baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fastq" $f1 $f2 --terse)
 
 	done
 
@@ -152,27 +160,26 @@ function launchApp {
 	projectId=$(bs -c "$CONFIG" list projects --project-name "$projectName" --terse)
 
 	while read pair
-	do
-		tum=$(printf "$pair" | cut -d$'\t' -f1)
-		nor=$(printf "$pair" | cut -d$'\t' -f2)
+		do
+			tum=$(printf "$pair" | cut -d$'\t' -f1)
+			nor=$(printf "$pair" | cut -d$'\t' -f2)
 
-		# Obtain sample ids from basespace
-		tumId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$tum" --terse)
-		norId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
+			# Obtain sample ids from basespace
+			tumId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$tum" --terse)
+			norId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$nor" --terse)
 
-		# Launch app and store the appsession ID	
-		appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$negId" "$norId" "$projectName" "$tumId" --terse)
-		#echo $appSessionId
+			# Launch app and store the appsession ID	
+			appSessionId=$(bs -c "$CONFIG" launch app -n "$APPNAME" "$negId" "$norId" "$projectName" "$tumId" --terse)
 	
-		# Wait for the app to complete and store the appsession ID	
-		appRes=$(bs -c "$CONFIG" wait "$appSessionId" --terse)
+			# Wait for the app to complete and store the appsession ID	
+			appRes=$(bs -c "$CONFIG" wait "$appSessionId" --terse)
 
-		echo "Downloading files"		
+			echo "Downloading files"		
 
-		# Download required analysis results files
-		bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bam "$RESULTSFOLDER"
-		bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bai "$RESULTSFOLDER"
-		bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.xls* "$RESULTSFOLDER"
+			# Download required analysis results files
+			bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bam "$RESULTSFOLDER"
+			bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.bai "$RESULTSFOLDER"
+			bs cp conf://"$CONFIG"/Projects/"$ProjectId"/appresults/"$appRes"/*.xls* "$RESULTSFOLDER"
 
 	done <"$SAMPLEPAIRS"
 
@@ -182,14 +189,21 @@ function launchApp {
 
 # Call the functions
 
+#Check sample sheet exists at location provided
+if ! [[ -e "$INPUTFOLDER""SampleSheet.csv" ]]
+	then
+
+fi
+
+
 # Parse sample sheet to obtain required information
 parseSampleSheet
 
 
 # Pair samples according to order in sample sheet if manually created pairs file has not been supplied
 if [[ "$makePairs" == 1 ]]
-then
-	pairSamples
+	then
+		pairSamples
 fi
 
 
@@ -197,7 +211,7 @@ fi
 echo "Displaying sample pairs:" 
 cat "$SAMPLEPAIRS"
 printf $'\n'
-echo "Abort the script if the samples are paired incorrectly and create a file of the pairs (see README.MD for further instructions)" 
+echo "Abort the script if the samples are paired incorrectly and create a file of the pairs (see README.MD for details about this file)." 
 printf $'\n'
 
 
