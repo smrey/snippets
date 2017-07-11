@@ -10,7 +10,6 @@ Version=0.2
 # How to use
 # bash CRUK_draft.sh <path_to_sample_sheet> <path_to_results_location> <config_file_name> <name_of_negative_control_sample> <sample_pairs_text_file>
 # /Users/sararey/Documents/cruk_test_data/rawFQs/ # for reference- path to sample sheet and fastqs
-# Requires bash version 4 or above
 
 
 # Usage checking
