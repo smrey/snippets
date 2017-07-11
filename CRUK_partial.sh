@@ -41,10 +41,13 @@ NEGATIVE="$3"
 
 
 # Check for the presence of the required files in the same directory as the script
-if ! [[ -e $NOTBASESPACE ]]
+if [[ -e $NOTBASESPACE ]]
 then
-		echo "Required file missing. File "not_bs_samples.txt" must be in the same location as the script. For instructions on creation of this file, see the ReadMe file."
-		exit 0
+	samples_to_skip=1
+else
+	samples_to_skip=-1
+	echo "No "not_bs_samples.txt" file found in the same directory as the script. All samples on the SampleSheet.csv will be uploaded to BaseSpace."
+	#exit 0
 fi
  
 
@@ -120,7 +123,14 @@ function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
+	if [[ "$samples_to_skip" == 1 ]]
+	then
+		fastqlist=$( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
+	else
+		fastqlist=$(printf -- '%s\n' "${samplePatient[@]}")
+	fi
+	
+	for fastq in $(printf -- '%s\n' "$fastqlist")
 	do
 		f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
 		f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz

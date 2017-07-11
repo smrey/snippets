@@ -120,12 +120,18 @@ function locateFastqs {
 
 	echo "Uploading fastqs"
 
-	for fastq in $( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
+	if [[ "$samples_to_skip" == 1 ]]
+	then
+		fastqlist=$( printf -- '%s\n' "${samplePatient[@]}" | grep -f "$NOTBASESPACE" -v )
+	else
+		fastqlist=$(printf -- '%s\n' "${samplePatient[@]}")
+	fi
+	
+	for fastq in $(printf -- '%s\n' "$fastqlist")
 	do
 		f1=$INPUTFOLDER${fastq}*_R1_*.fastq.gz
 		f2=$INPUTFOLDER${fastq}*_R2_*.fastq.gz
-
-			
+		
 		# Obtain basespace identifier for each sample
 		baseSpaceId=$(bs -c "$CONFIG" upload sample -p $projectName -i "$fastq" $f1 $f2 --terse)
 
