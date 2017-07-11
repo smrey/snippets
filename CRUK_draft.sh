@@ -151,7 +151,6 @@ function locateFastqs {
 function launchApp {
 
 	# Launch app for each pair of samples in turn as tumour normal pairs then download analysis files
-	echo "Launching app"
 	
 	# Obtain basespace ID of negative control- this is not an optional input through the commandline app launch
 	negId=$(bs -c "$CONFIG" list samples --project "$projectName" --sample "$NEGATIVE" --terse)
@@ -161,6 +160,8 @@ function launchApp {
 
 	while read pair
 		do
+			echo "Launching app"
+			
 			tum=$(printf "$pair" | cut -d$'\t' -f1)
 			nor=$(printf "$pair" | cut -d$'\t' -f2)
 
