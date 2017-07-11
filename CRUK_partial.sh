@@ -153,6 +153,7 @@ echo "Displaying sample pairs:"
 cat "$SAMPLEPAIRS"
 printf $'\n'
 echo "Abort the script if the samples are paired incorrectly and create a file of the pairs (see README.MD for further instructions)" 
+printf $'\n'
 
 
 # Get fastqs
