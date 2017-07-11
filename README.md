@@ -10,7 +10,7 @@ https://help.basespace.illumina.com/articles/descriptive/basespace-cli/.
 
 
 ### Required input files
-The Illumina SampleSheet.csv with the desired project identifier for BaseSpace in the Experiment Name field.
+  * The Illumina SampleSheet.csv with the desired project identifier for BaseSpace in the Experiment Name field.
 
 
   * Fastq pairs (read 1 and read 2) for each the samples.
@@ -49,11 +49,37 @@ Ensure that the $APPNAME variable is set to the correct name for the app.
 Place the SampleSheet.csv and the fastqs generated for each of the samples into a directory. The full path to this directory must be passed
 as the first command line argument.
 
+Create the desired output directory for the results and pass this as the second command line argument.
+
+Pass the sample name of the negative control sample as the third command line argument.
+
+If a manually created file containing the tumour blood pairs is required, place this file in the same directory as the script. Pass the
+name of this file as the fourth command line argument.
+
+If there are samples which were run, and so are on the sample sheet, that are not required to be analysed using the SMP2 BaseSpace application, 
+the names of these samples should be placed in a file called "not_bs_samples.txt" with each name on a new line. The file "not_bs_samples.txt"
+should be placed in the same directory as the script.
+
+#### Full example
+bash CRUK_draft.sh /path/to/samplesheet/and/fastqs/ /path/to/save/results/ NEGATIVECONTROL pairs.txt
+
+Note that the fourth argument is optional.
+
+## Creating the tumour blood pairs file
+If the sample sheet is not set up with the pattern tumour sample followed by paired blood sample for each patient sequentially, it is necessary
+to manually specify the tumour-normal pairs.
+Create a text file according to the following pattern:
+
+tumour1 <tab> blood1 <newline>
 
 
+tumour2 <tab> blood2 <newline>
 
 
-## Required files
+tumour3 <tab> blood3 <newline>
 
 
+and so on for each pair of samples belonging to each individual.
 
+The text file can have any name. It must be placed in the same directory as the script and the name of the file passed as the fourth command
+line argument.
