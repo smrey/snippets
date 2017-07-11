@@ -17,15 +17,16 @@ The Illumina SampleSheet.csv with the desired project identifier for BaseSpace i
 
 
   * An optional text file called "not_bs_samples.txt" containing the names of any samples on the Illumina SampleSheet.csv for which
-analysis in BaseSpace with the SMP2 app is not required. This should be placed in the same location as the script is run
-as the script. 
+analysis in BaseSpace with the SMP2 app is not required. This should be placed in the same location as the script.
 
 
   * An optional text file containing tumour normal pairs in the format <tumour_sample_id> <tab> <blood_sample_id> with each 
 pair on a new line. This is required if the arrangement of samples in the Illumina SampleSheet.csv does not match the expected
 order, which is tumour sample then normal sample for each patient in order. An example of this order is: S1 tumour sample for person 
 1, S2 blood sample for person 1, S3 tumour sample for person 2, S4 blood sample for person 2, etc.
-This file muct be located in the same directory as the script and the name of the file supplied as the fourth command line argument.
+
+This file must be located in the same directory as the script and the name of the file and extension supplied as the fourth command 
+line argument e.g. pairs.txt.
 
 ## Files which will be downloaded
 The script will download the Excel spreadsheet for downstream analysis. It will also download all of the BAM files and the BAM index files.
@@ -33,6 +34,22 @@ These files will be downloaded to the directory specified as the second command 
 
 
 ## Instructions for use
+### Prerequisites
+The Illumina CLI must be correctly set up to point to the required BaseSpace location. A config file can be specified in the script.
+
+The SMP2 app must have been imported. Instructions to import apps are available on the Illumina website.
+
+### Changes to the script required for initial set up
+Set up the correct BaseSpace location and set the $CONFIG variable to the name of the config file.
+
+Ensure that the $APPNAME variable is set to the correct name for the app.
+
+
+### Instructions for running the script
+Place the SampleSheet.csv and the fastqs generated for each of the samples into a directory. The full path to this directory must be passed
+as the first command line argument.
+
+
 
 
 

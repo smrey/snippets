@@ -192,7 +192,8 @@ function launchApp {
 #Check sample sheet exists at location provided
 if ! [[ -e "$INPUTFOLDER""SampleSheet.csv" ]]
 	then
-
+		echo "Sample Sheet not found at input folder location"
+		exit 0
 fi
 
 
