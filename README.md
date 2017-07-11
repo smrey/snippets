@@ -64,7 +64,7 @@ Note that the fourth argument is optional.
 ## Creating the tumour blood pairs file
 If the sample sheet is not set up with the pattern tumour sample followed by paired blood sample for each patient sequentially, it is necessary
 to manually specify the tumour-normal pairs.
-Create a text file according to the following pattern:
+Create a text file according to the following pattern with the sample names:
 
 tumour1 tab blood1 newline
 
