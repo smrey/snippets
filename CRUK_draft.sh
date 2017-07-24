@@ -4,7 +4,7 @@ set -euo pipefail
 #Description: CRUK Basespace app pipeline- draft version
 #Author: Sara Rey
 #Status: DEVELOPMENT/TESTING
-Version=0.2
+Version=0.3
 
 
 # How to use
@@ -16,14 +16,14 @@ Version=0.2
 if [ "$#" -lt 3 ]
 	then
 		echo "Commandline args incorrect. Usage: $0 <path_to_sample_sheet> <path_to_results_location> <name_of_negative_control_sample>." 
-		exit 0
+		exit -1
 fi
 
 # Check output directory exists
 if ! [[ -d $2 ]]
 	then 
 		echo "Output directory for results does not exist."
-		exit 0
+		exit -1
 fi
 
 
@@ -56,7 +56,7 @@ if [[ -e $NOTBASESPACE ]]
 		if ! [[ -s $NOTBASESPACE ]]
 			then
 				echo "The file "not_bs_samples.txt" is empty. When this file exists, it must contain the names of samples that are in the SampleSheet.csv, but should not be uploaded to BaseSpace."
-				exit 0
+				exit -1
 		fi
 	else
 		samples_to_skip=-1
@@ -194,7 +194,7 @@ function launchApp {
 if ! [[ -e "$INPUTFOLDER""SampleSheet.csv" ]]
 	then
 		echo "Sample Sheet not found at input folder location"
-		exit 0
+		exit -1
 fi
 
 
