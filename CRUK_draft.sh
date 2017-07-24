@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -euo pipefail
+set -euo pipefail
 
 #Description: CRUK Basespace app pipeline- draft version
 #Author: Sara Rey
