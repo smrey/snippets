@@ -57,7 +57,7 @@ the names of these samples should be placed in a file called "not_bs_samples.txt
 should be placed in the same directory as the script.
 
 #### Full example
-bash CRUK_draft.sh /path/to/samplesheet/and/fastqs/ /path/to/save/results/ NEGATIVECONTROL pairs.txt
+bash CRUK.sh /path/to/samplesheet/and/fastqs/ /path/to/save/results/ NEGATIVECONTROL pairs.txt
 
 Note that the fourth argument is optional.
 
